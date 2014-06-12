@@ -3,8 +3,6 @@ import os.path
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
-import requests
-from requests.exceptions import RequestException
 
 
 STARTING_POINTS = [
@@ -15,18 +13,6 @@ STARTING_POINTS = [
 KNOWN_URLS = set(STARTING_POINTS)
 HTML_CONTENT = dict()
 CACHE_DIR = os.path.realpath(os.path.join(__file__, '..', 'cache'))
-
-
-def get_html(url):
-    print(' :: HEAD {url}'.format(url=url))
-
-    head = requests.head(url)
-
-    if head.headers.get('content-type').startswith('text/html'):
-        print(' :: GET {url}'.format(url=url))
-        return requests.get(url).text
-    else:
-        print(' :: not html')
 
 
 def record_link_urls(base_url, soup):
@@ -44,14 +30,8 @@ def record_link_urls(base_url, soup):
         KNOWN_URLS.add(absolute_url)
 
 
-def save(url, content):
-    filename = base64.b32encode(url.encode('utf-8')).decode('utf-8')
 
-    with open(os.path.join(CACHE_DIR, filename), 'w') as cache_file:
-        cache_file.write(content)
-
-
-def load():
+def _load():
     """
     Populate KNOWN_URLS and HTML_CONTENT based on the contents of the cache
     directory.
@@ -69,34 +49,5 @@ def load():
             HTML_CONTENT[url] = html
             record_link_urls(url, BeautifulSoup(html))
 
-        print('loaded {0}'.format(url))
 
-
-def crawl():
-    load()
-
-    while True:
-        difference = KNOWN_URLS.difference(HTML_CONTENT)
-        if not difference:
-            print('no unseen urls')
-            break
-
-        for url in difference:
-            try:
-                html = get_html(url)
-            except RequestException:
-                continue
-
-            HTML_CONTENT[url] = html or ''
-            save(url, html)
-
-            if html is None:
-                continue
-
-            soup = BeautifulSoup(html)
-
-            record_link_urls(url, soup)
-
-
-if __name__ == "__main__":
-    crawl()
+_load()
