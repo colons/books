@@ -29,6 +29,7 @@ BLACKLIST = [
     'UTC',
     '«',
     '»',
+    'www',
 ]
 
 CHAIN_LENGTH = 3
