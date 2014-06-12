@@ -13,7 +13,7 @@ def get_html(url):
 
     head = requests.head(url)
 
-    if head.headers.get('content-type').startswith('text/html'):
+    if head.headers.get('content-type', '').startswith('text/html'):
         print(' :: GET {url}'.format(url=url))
         return requests.get(url).text
     else:
