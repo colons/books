@@ -4,12 +4,10 @@ from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
+from sys import argv
 
-STARTING_POINTS = [
-    'http://zqktlwi4fecvo6ri.onion/',
-    'http://torlinkbgs6aabns.onion/',
-    'http://dirnxxdraygbifgc.onion/',
-]
+
+STARTING_POINTS = argv[1:]
 KNOWN_URLS = set(STARTING_POINTS)
 HTML_CONTENT = dict()
 CACHE_DIR = os.path.realpath(os.path.join(__file__, '..', 'cache'))
