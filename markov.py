@@ -34,6 +34,8 @@ SENTENCES = set()
 NGRAMS = set()
 ENDINGS = []
 
+OUTPUT_BLACKLIST = set()
+
 
 def get_sentences(html):
     sentences = set()
@@ -55,6 +57,8 @@ def get_sentences(html):
 
             if not text:
                 continue
+
+            OUTPUT_BLACKLIST.add(text)
 
             for sentence in TextBlob(text).sentences:
                 # we want to include punctiation in our matching, so textblob's
@@ -128,5 +132,8 @@ def markov():
 
 if __name__ == '__main__':
     for i in range(30):
-        print()
-        print(markov())
+        result = markov()
+
+        if result not in OUTPUT_BLACKLIST:
+            print(result)
+            print()
