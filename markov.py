@@ -22,6 +22,7 @@ BLACKLIST = [
     '.onion',
     '/',
     '192.',
+    'UTC',
 ]
 
 CHAIN_LENGTH = 4
@@ -53,7 +54,9 @@ def get_sentences(html):
                 continue
 
             for sentence in TextBlob(text).sentences:
-                yield sentence
+                # we want to include punctiation in our matching, so textblob's
+                # sentences are useless to us
+                yield tuple(sentence.raw.split(' '))
 
     
 def _build_corpus():
@@ -62,10 +65,14 @@ def _build_corpus():
             SENTENCES.add(sentence)
 
     for sentence in SENTENCES:
-        for ngram in sentence.ngrams(4):
-            NGRAMS.add(tuple(ngram._collection))
+        if len(sentence) < CHAIN_LENGTH:
+            continue
 
-        ENDINGS.append(tuple(sentence.words[-(CHAIN_LENGTH - 1):]))
+        for ngram in [tuple(sentence[i:i+CHAIN_LENGTH])
+                      for i in range(0, (len(sentence) - CHAIN_LENGTH) + 1)]:
+            NGRAMS.add(ngram)
+
+        ENDINGS.append(tuple(sentence[-(CHAIN_LENGTH - 1):]))
 
 _build_corpus()
 
@@ -74,12 +81,14 @@ def markov():
     words = []
 
     first_sentence = choice([s for s in SENTENCES
-                             if len(s.words) >= CHAIN_LENGTH])
-    words.extend(first_sentence.words[:CHAIN_LENGTH - 1])
+                             if len(s) >= CHAIN_LENGTH])
+    words.extend(first_sentence[:CHAIN_LENGTH - 1])
 
     while True:
         chain = tuple(words[-(CHAIN_LENGTH - 1):])
         choices = []
+
+        # XXX be case-insensitive
 
         for ngram in NGRAMS:
             if tuple(ngram)[:(CHAIN_LENGTH - 1)] == chain:
