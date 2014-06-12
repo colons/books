@@ -22,6 +22,9 @@ BLACKLIST = [
     '.onion',
     '/',
     '192.',
+    '.net',
+    '.org',
+    '.com',
     'UTC',
 ]
 
@@ -77,6 +80,23 @@ def _build_corpus():
 _build_corpus()
 
 
+def eq(a, b):
+    """
+    Return True if, for our purposes, a tuple of words can be considered equal.
+    Case-insensitive, but punctuation-sensitive.
+    """
+
+    if len(a) != len(b):
+        raise ValueError('tuples of differing length handed to eq():\n'
+                         '{0}, {1}'.format(a, b))
+
+    for i in range(len(a)):
+        if a[i].lower() != b[i].lower():
+            return False
+
+    return True
+
+
 def markov():
     words = []
 
@@ -88,14 +108,12 @@ def markov():
         chain = tuple(words[-(CHAIN_LENGTH - 1):])
         choices = []
 
-        # XXX be case-insensitive
-
         for ngram in NGRAMS:
-            if tuple(ngram)[:(CHAIN_LENGTH - 1)] == chain:
+            if eq(tuple(ngram)[:(CHAIN_LENGTH - 1)], chain):
                 choices.append(ngram[-1])
 
         for ending in ENDINGS:
-            if chain == ending:
+            if eq(chain, ending):
                 choices.append(None)
 
         new = choice(choices)
