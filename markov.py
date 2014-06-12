@@ -26,9 +26,11 @@ BLACKLIST = [
     '.org',
     '.com',
     'UTC',
+    '«',
+    '»',
 ]
 
-CHAIN_LENGTH = 4
+CHAIN_LENGTH = 3
 
 SENTENCES = set()
 NGRAMS = set()
