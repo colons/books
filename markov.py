@@ -15,6 +15,7 @@ SENTENCE_TAGS = [
 BLACKLIST = [
     '<',
     '>',
+    '|',
     '=',
     '@',
     'http:',
