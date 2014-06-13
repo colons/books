@@ -155,6 +155,5 @@ if __name__ == '__main__':
     for i in range(30):
         result = markov()
 
-        if result not in OUTPUT_BLACKLIST:
-            print(result)
-            print()
+        print(result)
+        print()
