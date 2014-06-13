@@ -42,13 +42,12 @@ OUTPUT_BLACKLIST = set()
 
 
 def get_sentences(html):
-    sentences = set()
-
     for tag in SENTENCE_TAGS:
         for element in BeautifulSoup(html).find_all(tag):
             if any([element.find_all(tag) for tag in SENTENCE_TAGS]):
-                # this element contains many elements that might contain sentences
-                # so we will ignore it and come back to its children later
+                # this element contains many elements that might contain
+                # sentences so we will ignore it and come back to its children
+                # later
                 continue
 
             spacey_text = element.text
@@ -64,12 +63,17 @@ def get_sentences(html):
 
             OUTPUT_BLACKLIST.add(text)
 
-            for sentence in TextBlob(text).sentences:
+            try:
+                sentences = TextBlob(text).sentences
+            except ValueError:
+                continue
+
+            for sentence in sentences:
                 # we want to include punctiation in our matching, so textblob's
                 # sentences are useless to us
                 yield tuple(sentence.raw.split(' '))
 
-    
+
 def _build_corpus():
     for url, content in HTML_CONTENT.items():
         for sentence in get_sentences(content):
