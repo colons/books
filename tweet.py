@@ -14,7 +14,5 @@ if __name__ == '__main__':
             len(string) < 140 and
             string not in OUTPUT_BLACKLIST
         ):
-            print(string)
-            input('gonna post that, interrupt to not')
             api.statuses.update(status=string)
             break
