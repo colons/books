@@ -40,6 +40,9 @@ ENDINGS = []
 
 OUTPUT_BLACKLIST = set()
 
+with open('/usr/share/dict/words') as wordlist_file:
+    WORDS = {w.strip().lower() for w in wordlist_file.readlines()}
+
 
 def get_sentences(html):
     for tag in SENTENCE_TAGS:
@@ -69,6 +72,16 @@ def get_sentences(html):
                 continue
 
             for sentence in sentences:
+                # decide if this sentences is probably english or not
+                native_wordcount = 0
+
+                for word in sentence.words:
+                    if word.lower() in WORDS:
+                        native_wordcount += 1
+
+                if native_wordcount < len(sentence.words)/2:
+                    continue
+
                 # we want to include punctiation in our matching, so textblob's
                 # sentences are useless to us
                 yield tuple(sentence.raw.split(' '))
