@@ -2,3 +2,4 @@ requests
 twitter
 beautifulsoup4
 TextBlob
+lxml
