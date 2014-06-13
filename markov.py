@@ -152,7 +152,7 @@ def markov():
 
 
 if __name__ == '__main__':
-    for i in range(30):
+    while True:
         result = markov()
 
         if result not in OUTPUT_BLACKLIST:
