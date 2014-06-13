@@ -1,5 +1,5 @@
-import base64
 import os.path
+import uuid
 
 from bs4 import BeautifulSoup
 import requests
@@ -21,10 +21,10 @@ def get_html(url):
 
 
 def save(url, content):
-    filename = base64.b32encode(url.encode('utf-8')).decode('utf-8')
+    filename = str(uuid.uuid4())
 
     with open(os.path.join(CACHE_DIR, filename), 'w') as cache_file:
-        cache_file.write(content)
+        cache_file.write(url + '\n\n' + content)
 
 
 def crawl():

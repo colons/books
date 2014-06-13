@@ -1,4 +1,3 @@
-import base64
 import os.path
 from urllib.parse import urljoin, urlparse
 
@@ -28,7 +27,6 @@ def record_link_urls(base_url, soup):
         KNOWN_URLS.add(absolute_url)
 
 
-
 def _load():
     """
     Populate KNOWN_URLS and HTML_CONTENT based on the contents of the cache
@@ -39,13 +37,12 @@ def _load():
         os.mkdir(CACHE_DIR)
 
     for filename in os.listdir(CACHE_DIR):
-        url = base64.b32decode(filename).decode('utf-8')
-        KNOWN_URLS.add(url)
-
         with open(os.path.join(CACHE_DIR, filename)) as html_file:
-            html = html_file.read()
-            HTML_CONTENT[url] = html
-            record_link_urls(url, BeautifulSoup(html))
+            url, html = html_file.read().split('\n\n', 1)
+
+        HTML_CONTENT[url] = html
+        record_link_urls(url, BeautifulSoup(html))
+        KNOWN_URLS.add(url)
 
 
 _load()
